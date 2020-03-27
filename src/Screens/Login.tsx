@@ -15,7 +15,8 @@ interface State {
   isAuthClicked: boolean
 }
 
-export default class LoginScreen extends Component {
+export default class LoginScreen extends Component <Props, State> {
+  pass: any;
 
   constructor(props: Props) {
     super(props);
@@ -103,10 +104,6 @@ export default class LoginScreen extends Component {
             selectionColor={theme.colors.primary}
             underlineColor="transparent"
             mode="outlined"
-            ref={input => {
-              console.log("refed")
-              this.pass = input;
-            }}
             label="Пароль"
             returnKeyType="done"
             onChangeText={(text) => { this.setState({ password: text }) }}
