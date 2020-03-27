@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, View, Linking} from 'react-native';
 import Background from '../Components/Background';
 import Logo from '../Components/Logo';
 import Header from '../Components/Header';
@@ -34,7 +34,7 @@ export default class LoginScreen extends Component {
 
         <View style={styles.forgotPassword}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('ForgotPasswordScreen')}
+            onPress={() => Linking.openURL('https://grade.sfedu.ru/remind')}
           >
             <Text style={styles.label}>Забыли пароль?</Text>
           </TouchableOpacity>
