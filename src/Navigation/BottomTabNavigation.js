@@ -1,29 +1,30 @@
 import * as React from 'react';
 import { BottomNavigation, Text } from 'react-native-paper';
 import Schedule from '../Screens/Schedule'
+import LoginScreen from '../Screens/Login'
 
-const Schedule2 = () => <Schedule/>;
+const ScheduleRoute = () => <Schedule/>;
 
-const AlbumsRoute = () => <Text>Albums</Text>;
+const GradeRoute = () => <LoginScreen/>;
 
-const RecentsRoute = () => <Text>Recents</Text>;
+const AccountRoute = () => <Text>Recents</Text>;
 
 export default class BNavigation extends React.Component {
   state = {
     index: 0,
     routes: [
       { key: 'schedule', title: 'Расписание', icon: 'table' },
-      { key: 'albums', title: 'БРС', icon: 'checkbox-multiple-marked-circle-outline' },
-      { key: 'recents', title: 'Личный кабинет', icon: 'account-circle' },
+      { key: 'grade', title: 'БРС', icon: 'checkbox-multiple-marked-circle-outline' },
+      { key: 'account', title: 'Личный кабинет', icon: 'account-circle' },
     ],
   };
 
   _handleIndexChange = index => this.setState({ index });
 
   _renderScene = BottomNavigation.SceneMap({
-    schedule: Schedule2,
-    albums: AlbumsRoute,
-    recents: RecentsRoute,
+    schedule: ScheduleRoute,
+    grade: GradeRoute,
+    account: AccountRoute,
   });
 
   render() {
