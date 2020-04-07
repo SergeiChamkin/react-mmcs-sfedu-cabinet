@@ -20,7 +20,7 @@ export default class LoginScreen extends Component <Props, State> {
 
   constructor(props: Props) {
     super(props);
-    this.state = { username: "", password: "", isAuthClicked: false }
+    this.state = { username: "Chamkin", password: "135790Aa$", isAuthClicked: false }
   }
 
   auth() {
@@ -31,35 +31,21 @@ export default class LoginScreen extends Component <Props, State> {
       var bodyFormData = new FormData();
       bodyFormData.append('openid_url', this.state.username);
       bodyFormData.append('password', this.state.password);
-      axios({
-        method: 'post',
-        url: 'https://openid.sfedu.ru/server.php/login',
-        data: bodyFormData
+      fetch("http://openid.sfedu.ru/server.php/login", {
+        method: "POST",
+        credentials: "same-origin",
+        body: bodyFormData,
       })
-        .then((response) => {
-          console.log(response.data);
-          if (!response.data.includes("Вы вошли как")) {
-            Alert.alert(
-              'Не удалось войти',
-              'Неправильный логин или пароль',
-              [
-                { text: 'Ок', onPress: () => console.log('OK Pressed') },
-              ],
-              { cancelable: false },
-            );
-            this.setState({isAuthClicked:false})
-          }
+        .then(response => {
+          console.log(response.headers.get('Set-Cookie'))
+          return response.text();
         })
-        .catch((error) => {
-          Alert.alert(
-            'Не удалось войти',
-            'Нет подключения к сети',
-            [
-              { text: 'Ок', onPress: () => console.log('OK Pressed') },
-            ],
-            { cancelable: false },
-          );
-          this.setState({ isAuthClicked: false })
+        .then(responseJson => {
+          //console.log(responseJson);
+    
+        })
+        .catch(error => {
+          console.log(error);
         });
     })
   }
