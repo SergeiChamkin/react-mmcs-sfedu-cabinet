@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, StyleSheet, Text, View, Alert, Linking } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, View, Alert, Linking, Keyboard, KeyboardAvoidingView, AsyncStorage } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import Background from '../Components/Background';
 import Logo from '../Components/Logo';
@@ -7,51 +7,144 @@ import Header from '../Components/Header';
 import Button from '../Components/Button';
 import { theme } from '../core/theme';
 import axios from 'axios';
-export interface Props { }
+import AwesomeAlert from 'react-native-awesome-alerts';
+import * as SecureStore from 'expo-secure-store';
+import { authUser, getScheduleUtils } from "../Utils/Utils"
+import { hS } from '../Utils/Scale';
+import * as FileSystem from 'expo-file-system';
+import { AppLoading } from 'expo';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants'
+
+
+export interface Props { nav: Function }
 
 interface State {
   username: string,
   password: string,
-  isAuthClicked: boolean
+  isAuthClicked: boolean;
+  showAlert: boolean;
+  progress: boolean;
+  message: string;
+  isBad: boolean;
+  isLoginGood: boolean;
+  isPasswordGood: boolean;
 }
 
-export default class LoginScreen extends Component <Props, State> {
+export default class LoginScreen extends Component<Props, State> {
   pass: any;
+
+
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
   constructor(props: Props) {
     super(props);
-    this.state = { username: "Chamkin", password: "135790Aa$", isAuthClicked: false }
+    this.state = { username: "", password: "", isAuthClicked: false, showAlert: false, message: "Входим в аккаунт", progress: true, isBad: false, isLoginGood: false, isPasswordGood: false }
   }
 
-  auth() {
+
+  showAlert = () => {
+    this.setState({
+      showAlert: true
+    });
+  };
+
+  hideAlert = () => {
+    this.setState({
+      showAlert: false
+    });
+  };
+
+  async componentDidMount() {
+    var isFirst = await SecureStore.getItemAsync("isFirstLogin")
+    console.log(isFirst)
+    if (isFirst == null) {
+      await SecureStore.setItemAsync("isFirstLogin","1")
+      Alert.alert(
+        'Информация',
+        'Сейчас Вам предложат включить уведомления, это нужно для того, чтобы приложение могло в фоне уведомлять о новых оценках. Уведомления можно включить в настройках телефона',
+        [
+          { text: 'Ок', onPress: async () => this.askPermition() },
+        ],
+        { cancelable: false },
+      );
+      
+    }
+  }
+
+  async askPermition() {
+    let result = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+
+    if (Constants.isDevice && result.status === 'granted') {
+      console.log('Notification permissions granted.')
+    }
+
+  }
+
+  async getSchedule() {
+    try {
+      var response = await getScheduleUtils(this.state.username);
+      await AsyncStorage.setItem("timetable", JSON.stringify(response));
+      global.s = response;
+      this.setState({ message: "Успешно", progress: false });
+      await this.sleep(500);
+      this.props.nav("BNavigation")
+      await this.sleep(3000)
+      this.setState({isAuthClicked:false,isBad:false,username:"",password:""})
+    } catch (e) {
+      this.setState({ isAuthClicked: false, isBad: true, message: "Ошибка с сетью", progress: false })
+    }
+  }
+
+  async auth() {
+    Keyboard.dismiss()
+    await fetch("https://openid.sfedu.ru/server.php/logout");
+    this.showAlert();
     if (this.state.isAuthClicked == true) {
       return
     }
-    this.setState({ isAuthClicked: true }, () => {
-      var bodyFormData = new FormData();
-      bodyFormData.append('openid_url', this.state.username);
-      bodyFormData.append('password', this.state.password);
-      fetch("http://openid.sfedu.ru/server.php/login", {
-        method: "POST",
-        credentials: "same-origin",
-        body: bodyFormData,
-      })
-        .then(response => {
-          console.log(response.headers.get('Set-Cookie'))
-          return response.text();
-        })
-        .then(responseJson => {
-          //console.log(responseJson);
-    
-        })
-        .catch(error => {
-          console.log(error);
-        });
+    this.setState({ isAuthClicked: true, isBad: false, message: "Входим в аккаунт", progress: true }, async () => {
+      try {
+        var response = await authUser(this.state.username, this.state.password);
+        if (response.includes("Вы вошли как")) {
+          await this.sleep(750)
+          await SecureStore.setItemAsync("username", this.state.username)
+          await SecureStore.setItemAsync("password", this.state.password)
+          this.setState({ message: "Успешно!" })
+          await this.sleep(650)
+          this.setState({ message: "Получаю расписание" })
+          this.getSchedule()
+        } else {
+          await this.sleep(750)
+          this.setState({ message: "Неверные данные!", isBad: true, isAuthClicked: false, password: "", isPasswordGood: false, progress: false })
+        }
+      } catch (err) {
+        this.setState({ message: "Ошибка!", isBad: true, isAuthClicked: false, password: "", isPasswordGood: false, progress: false })
+      }
     })
   }
 
+  checkPassword(text) {
+    if (text.length >= 5 && /^[0-9a-zA-Z_.@#$%^&-]+$/.test(text)) {
+      this.setState({ isPasswordGood: true });
+    } else {
+      this.setState({ isPasswordGood: false });
+    }
+  }
+
+  //Возможно условия другие, поэтому оставил 2 функции
+  checkLogin(text) {
+    if (text.length >= 3 && /^[0-9a-zA-Z_.@-]+$/.test(text)) {
+      this.setState({ isLoginGood: true });
+    } else {
+      this.setState({ isLoginGood: false });
+    }
+  }
 
   render() {
+    const { showAlert } = this.state;
     return (
       <Background>
 
@@ -60,64 +153,95 @@ export default class LoginScreen extends Component <Props, State> {
         <Header>Добро пожаловать!</Header>
 
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            label="Логин"
-            returnKeyType="next"
-            style={styles.input}
-            value={this.state.username}
-            selectionColor={theme.colors.primary}
-            underlineColor="transparent"
-            mode="outlined"
-            onChangeText={(text) => { this.setState({ username: text }) }}
-            autoCapitalize="none"
-            textContentType="username"
-            keyboardType="default"
-            onSubmitEditing={() => {
-              this.pass.focus()
-            }}
-          />
-        </View>
+        <KeyboardAvoidingView style={{ width: "100%" }}>
+          <View style={[styles.inputContainer, { zIndex: -1 }]}>
+            <TextInput
+              label="Логин"
+              returnKeyType="next"
+              style={styles.input}
+              value={this.state.username}
+              selectionColor={theme.colors.primary}
+              underlineColor="transparent"
+              mode="outlined"
+              onChangeText={(text) => { this.setState({ username: text }); this.checkLogin(text) }}
+              textContentType="username"
+              keyboardType="default"
+              onSubmitEditing={() => {
+                this.pass.focus()
+              }}
+              blurOnSubmit={false}
+
+            />
+          </View>
 
 
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            ref={input => {
-              this.pass = input;
-            }}
-            style={styles.input}
-            selectionColor={theme.colors.primary}
-            underlineColor="transparent"
-            mode="outlined"
-            label="Пароль"
-            returnKeyType="done"
-            onChangeText={(text) => { this.setState({ password: text }) }}
-            value={this.state.password}
-            secureTextEntry
-            blurOnSubmit
-          />
-        </View>
+          <View style={[styles.inputContainer, { zIndex: -1 }]}>
+            <TextInput
+              ref={input => {
+                this.pass = input;
+              }}
+              style={styles.input}
+              selectionColor={theme.colors.primary}
+              underlineColor="transparent"
+              mode="outlined"
+              label="Пароль"
+              returnKeyType="done"
+              onChangeText={(text) => { this.setState({ password: text }); this.checkPassword(text) }}
+              value={this.state.password}
+              secureTextEntry
+              blurOnSubmit={false}
+              onSubmitEditing={() => {
+                if (!(this.state.isAuthClicked || !this.state.isLoginGood || !this.state.isPasswordGood)) {
+                  this.auth()
+                }
+              }}
+            />
+          </View>
 
+          <View style={styles.forgotPassword}>
+            <TouchableOpacity
+              onPress={() => Linking.openURL('https://grade.sfedu.ru/remind')}
+            >
+              <Text style={styles.label}>Забыли пароль?</Text>
+            </TouchableOpacity>
+          </View>
 
-        <View style={styles.forgotPassword}>
-          <TouchableOpacity
-            onPress={() => Linking.openURL('https://grade.sfedu.ru/remind')}
-          >
-            <Text style={styles.label}>Забыли пароль?</Text>
-          </TouchableOpacity>
-        </View>
-
-        <Button mode="contained" onPress={() => { this.auth() }} disabled={this.state.isAuthClicked}>
-          Войти
+          <View style={{ zIndex: -10, width: "100%" }}>
+            <Button mode="contained" onPress={() => { this.auth() }} disabled={(this.state.isAuthClicked || !this.state.isLoginGood || !this.state.isPasswordGood)} style={{ zIndex: -1 }}>
+              Войти
         </Button>
-
+          </View>
+        </KeyboardAvoidingView>
         <View style={styles.row}>
           <Text style={styles.label}>Ещё нет аккаунта? </Text>
           <TouchableOpacity>
             <Text style={styles.link}>Завести!</Text>
           </TouchableOpacity>
         </View>
+
+        <AwesomeAlert
+          show={showAlert}
+          showProgress={this.state.progress}
+          title="Авторизация"
+          message={this.state.message}
+          closeOnTouchOutside={false}
+          closeOnHardwareBackPress={false}
+          showCancelButton={this.state.isBad}
+          showConfirmButton={false}
+          cancelText="Ок"
+          confirmButtonColor="#DD6B55"
+          progressColor={theme.colors.primary}
+          titleStyle={{ fontSize: 27 }}
+          messageStyle={{ fontSize: 18 }}
+          progressSize={40}
+          onCancelPressed={() => {
+            this.hideAlert();
+          }}
+          onConfirmPressed={() => {
+            this.hideAlert();
+          }}
+        />
       </Background>
     );
   }
@@ -131,13 +255,14 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     marginTop: 4,
+    zIndex: -1
   },
   label: {
     color: "#414757",
   },
   link: {
     fontWeight: 'bold',
-    color: "#600EE6",
+    color: theme.colors.primary,
   },
   inputContainer: {
     width: '100%',

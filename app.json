@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "MMCS HOME",
+    "name": "Мехмат",
     "slug": "react-mmcs-sfedu-cabinet",
     "privacy": "public",
     "sdkVersion": "36.0.0",
@@ -9,6 +9,14 @@
       "android",
       "web"
     ],
+    "android": {
+      "package": "com.chamkin.mmcshome",
+      "versionCode": 1
+    },
+    "androidStatusBar": {
+      "barStyle": "dark-content",
+      "backgroundColor": "#600EE6"
+    },
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,7 +32,12 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "fetch"
+        ]
+      }
     }
   }
 }
