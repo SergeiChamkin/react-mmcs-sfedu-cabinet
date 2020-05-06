@@ -61,7 +61,7 @@ export default class LoginScreen extends Component<Props, State> {
     var isFirst = await SecureStore.getItemAsync("isFirstLogin")
     console.log(isFirst)
     if (isFirst == null) {
-      await SecureStore.setItemAsync("isFirstLogin","1")
+      await SecureStore.setItemAsync("isFirstLogin", "1")
       Alert.alert(
         'Информация',
         'Сейчас Вам предложат включить уведомления, это нужно для того, чтобы приложение могло в фоне уведомлять о новых оценках. Уведомления можно включить в настройках телефона',
@@ -70,7 +70,7 @@ export default class LoginScreen extends Component<Props, State> {
         ],
         { cancelable: false },
       );
-      
+
     }
   }
 
@@ -92,7 +92,7 @@ export default class LoginScreen extends Component<Props, State> {
       await this.sleep(500);
       this.props.nav("BNavigation")
       await this.sleep(3000)
-      this.setState({isAuthClicked:false,isBad:false,username:"",password:""})
+      this.setState({ isAuthClicked: false, isBad: false, username: "", password: "" })
     } catch (e) {
       this.setState({ isAuthClicked: false, isBad: true, message: "Ошибка с сетью", progress: false })
     }
@@ -153,65 +153,65 @@ export default class LoginScreen extends Component<Props, State> {
         <Header>Добро пожаловать!</Header>
 
 
-        <KeyboardAvoidingView style={{ width: "100%" }}>
-          <View style={[styles.inputContainer, { zIndex: -1 }]}>
-            <TextInput
-              label="Логин"
-              returnKeyType="next"
-              style={styles.input}
-              value={this.state.username}
-              selectionColor={theme.colors.primary}
-              underlineColor="transparent"
-              mode="outlined"
-              onChangeText={(text) => { this.setState({ username: text }); this.checkLogin(text) }}
-              textContentType="username"
-              keyboardType="default"
-              onSubmitEditing={() => {
-                this.pass.focus()
-              }}
-              blurOnSubmit={false}
+        <KeyboardAvoidingView style={{ width: "100%" }} behavior={"padding"} keyboardVerticalOffset={-hS(45)}>
+            <View style={[styles.inputContainer, { zIndex: -1 }]}>
+              <TextInput
+                label="Логин"
+                returnKeyType="next"
+                style={styles.input}
+                value={this.state.username}
+                selectionColor={theme.colors.primary}
+                underlineColor="transparent"
+                mode="outlined"
+                onChangeText={(text) => { this.setState({ username: text }); this.checkLogin(text) }}
+                textContentType="username"
+                keyboardType="default"
+                onSubmitEditing={() => {
+                  this.pass.focus()
+                }}
+                blurOnSubmit={false}
 
-            />
-          </View>
+              />
+            </View>
 
 
 
-          <View style={[styles.inputContainer, { zIndex: -1 }]}>
-            <TextInput
-              ref={input => {
-                this.pass = input;
-              }}
-              style={styles.input}
-              selectionColor={theme.colors.primary}
-              underlineColor="transparent"
-              mode="outlined"
-              label="Пароль"
-              returnKeyType="done"
-              onChangeText={(text) => { this.setState({ password: text }); this.checkPassword(text) }}
-              value={this.state.password}
-              secureTextEntry
-              blurOnSubmit={false}
-              onSubmitEditing={() => {
-                if (!(this.state.isAuthClicked || !this.state.isLoginGood || !this.state.isPasswordGood)) {
-                  this.auth()
-                }
-              }}
-            />
-          </View>
+            <View style={[styles.inputContainer, { zIndex: -1 }]}>
+              <TextInput
+                ref={input => {
+                  this.pass = input;
+                }}
+                style={styles.input}
+                selectionColor={theme.colors.primary}
+                underlineColor="transparent"
+                mode="outlined"
+                label="Пароль"
+                returnKeyType="done"
+                onChangeText={(text) => { this.setState({ password: text }); this.checkPassword(text) }}
+                value={this.state.password}
+                secureTextEntry
+                blurOnSubmit={false}
+                onSubmitEditing={() => {
+                  if (!(this.state.isAuthClicked || !this.state.isLoginGood || !this.state.isPasswordGood)) {
+                    this.auth()
+                  }
+                }}
+              />
+            </View>
 
-          <View style={styles.forgotPassword}>
-            <TouchableOpacity
-              onPress={() => Linking.openURL('https://grade.sfedu.ru/remind')}
-            >
-              <Text style={styles.label}>Забыли пароль?</Text>
-            </TouchableOpacity>
-          </View>
+            <View style={styles.forgotPassword}>
+              <TouchableOpacity
+                onPress={() => Linking.openURL('https://grade.sfedu.ru/remind')}
+              >
+                <Text style={styles.label}>Забыли пароль?</Text>
+              </TouchableOpacity>
+            </View>
 
-          <View style={{ zIndex: -10, width: "100%" }}>
-            <Button mode="contained" onPress={() => { this.auth() }} disabled={(this.state.isAuthClicked || !this.state.isLoginGood || !this.state.isPasswordGood)} style={{ zIndex: -1 }}>
-              Войти
-        </Button>
-          </View>
+            <View style={{ zIndex: -10, width: "100%" }}>
+              <Button mode="contained" onPress={() => { this.auth() }} disabled={(this.state.isAuthClicked || !this.state.isLoginGood || !this.state.isPasswordGood)} style={{ zIndex: -1 }}>
+                Войти
+            </Button>
+            </View>
         </KeyboardAvoidingView>
         <View style={styles.row}>
           <Text style={styles.label}>Ещё нет аккаунта? </Text>
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    marginTop: 4,
+    marginTop: hS(4),
     zIndex: -1
   },
   label: {
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: '100%',
-    marginVertical: 12,
+    marginVertical: hS(14),
   },
   input: {
     backgroundColor: theme.colors.surface,

@@ -77,7 +77,8 @@ export default class Schedule extends Component {
 
 
     async componentDidMount() {
-        this.refresh();
+        this.tab=this.getRelevantIndex();
+        //this.refresh();
         AppState.addEventListener("change", this._handleAppStateChange);
         this.getStringTypeOfWeek();
         var isFirst = await SecureStore.getItemAsync("isFirstS")
@@ -265,7 +266,7 @@ export default class Schedule extends Component {
         return (
             <Tabs prerenderingSiblingsNumber={10} style={{ flex: 1, elevation: 0 }} noShadow={true} tabContainerStyle={{
                 elevation: 0
-            }} initialPage={this.tab} ref={(r)=>{this.reft=r}} page={this.tab}>
+            }} initialPage={this.tab} ref={(r)=>{this.reft=r}} page={this.tab} onChangeTab={(i)=>{this.tab=i}}>
                 {answ}
             </Tabs>
         )

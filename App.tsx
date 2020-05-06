@@ -105,8 +105,8 @@ export default class App extends React.Component<Props, State> {
     } catch (e) {
       console.log(e)
     }
-    await BackgroundFetch.registerTaskAsync("BACKGROUND_CHECK_MARKS", { minimumInterval: 60 * 10 })
-    BackgroundFetch.setMinimumIntervalAsync(60 * 10)
+    await BackgroundFetch.registerTaskAsync("BACKGROUND_CHECK_MARKS", { minimumInterval: 60 * 30 })
+    BackgroundFetch.setMinimumIntervalAsync(60 * 30)
     console.log(await TaskManager.getRegisteredTasksAsync())
 
     await Font.loadAsync({
@@ -133,10 +133,10 @@ export default class App extends React.Component<Props, State> {
     var username = await SecureStore.getItemAsync("username");
     var password = await SecureStore.getItemAsync("password");
 
-    /*
+
     this.setState({screen:"login", isReady:true})
     return 
-    */
+
 
     if (username == null || password == null) {
       this.setState({ screen: "login", isReady: true })

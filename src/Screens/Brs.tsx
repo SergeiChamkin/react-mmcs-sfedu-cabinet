@@ -16,24 +16,45 @@ interface State {
     isRefreshing: boolean;
     url: string;
     injection: string;
-    badUrls: number
+    badUrls: number;
+    isShow: boolean;
 }
 
 
 export default class BRS extends Component<Props, State> {
     username = ''
     password = ''
+    backCount = 0
+    url = ''
 
-    hiderwb(){
-        console.log("here")
-        this.setState({isShow:false})
+    hiderwb() {
+        this.setState({ isShow: false })
     }
-    async refresh() {
+
+
+    async checker(val) {
+        this.sleep(5200).then(() => {
+            if (this.state.isShow == false && this.backCount == val) {
+                Alert.alert(
+                    'Ошибка',
+                    'Не удалось загрузить страницу',
+                    [
+                        { text: 'Я подожду', onPress: () => console.log('OK Pressed') },
+                        { text: 'Перезагрузить', onPress: () => this.refresh() },
+                    ],
+                    { cancelable: true },
+                );
+            }
+        })
+    }
+
+    async refresh(val) {
+        this.backCount++; //Невероятно красивое решение!!!!!!!!!!!!!!!!!!
+        this.checker(val);
         this.username = await SecureStore.getItemAsync("username");
         this.password = await SecureStore.getItemAsync("password");
         this.setState({ url: 'https://openid.sfedu.ru/server.php?openid.return_to=http%3A%2F%2Fgrade.sfedu.ru%2Fhandler%2Fsign%2Fopenidfinish%3Fuser_role%3Dstudent&openid.mode=checkid_setup&openid.identity=https%3A%2F%2Fopenid.sfedu.ru%2Fserver.php%2Fidpage%3Fuser%3D' + this.username + '&openid.trust_root=http%3A%2F%2Fgrade.sfedu.ru&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.claimed_id=https%3A%2F%2Fopenid.sfedu.ru%2Fserver.php%2Fidpage%3Fuser%3D' + this.username + '&openid.realm=http%3A%2F%2Fgrade.sfedu.ru&openid.ns.sreg=http://openid.net/extensions/sreg/1.1&openid.sreg.optional=email%2Cnickname%2Cr61globalkey%2Cstaff%2Cstudent%2Cr61studentid&', injection: "document.querySelector('#foo > table > tbody > tr:nth-child(1) > td > input[type=password]').value = '" + this.password + "';document.querySelector('#foo > table > tbody > tr:nth-child(2) > td > input[type=submit]:nth-child(1)').click();" })
-        console.log("refresher")
-        this.setState({ countOfLoading: 0,badUrls:0,isShow:false })
+        this.setState({ countOfLoading: 0, badUrls: 0, isShow: false })
         this.refWebview.clearCache();
         this.refWebview.injectJavaScript('window.location.assign("' + this.state.url + '");')
         this.refWebview.injectJavaScript(this.state.injection)
@@ -74,7 +95,6 @@ export default class BRS extends Component<Props, State> {
     async componentDidMount() {
         AppState.addEventListener("change", this._handleAppStateChange);
         var isFirst = await SecureStore.getItemAsync("isFirstBRS")
-        console.log(isFirst)
         if (isFirst == null) {
             await SecureStore.setItemAsync("isFirstBRS", "1")
             Alert.alert(
@@ -89,40 +109,37 @@ export default class BRS extends Component<Props, State> {
         this.username = await SecureStore.getItemAsync("username");
         this.password = await SecureStore.getItemAsync("password");
         this.setState({ url: 'https://openid.sfedu.ru/server.php?openid.return_to=http%3A%2F%2Fgrade.sfedu.ru%2Fhandler%2Fsign%2Fopenidfinish%3Fuser_role%3Dstudent&openid.mode=checkid_setup&openid.identity=https%3A%2F%2Fopenid.sfedu.ru%2Fserver.php%2Fidpage%3Fuser%3D' + this.username + '&openid.trust_root=http%3A%2F%2Fgrade.sfedu.ru&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.claimed_id=https%3A%2F%2Fopenid.sfedu.ru%2Fserver.php%2Fidpage%3Fuser%3D' + this.username + '&openid.realm=http%3A%2F%2Fgrade.sfedu.ru&openid.ns.sreg=http://openid.net/extensions/sreg/1.1&openid.sreg.optional=email%2Cnickname%2Cr61globalkey%2Cstaff%2Cstudent%2Cr61studentid&', injection: "document.querySelector('#foo > table > tbody > tr:nth-child(1) > td > input[type=password]').value = '" + this.password + "';document.querySelector('#foo > table > tbody > tr:nth-child(2) > td > input[type=submit]:nth-child(1)').click();" })
+        this.checker();
     }
 
 
+
     async handleNavChange(data) {
-        if(data==null) return;
-        if(data.nativeEvent==null) return;
-        if(data.nativeEvent.url==null) return;
-        if (data.nativeEvent.url == "https://openid.sfedu.ru/server.php/login") {
-            console.log("bad")
-            if (this.state.badUrls < 3) {
-                this.setState({ badUrls: this.state.badUrls + 1 })
-            } else {
-                this.logout();
-                await this.sleep(350)
-                this.setState({badUrls:0})
-            }
-        }
+        if (data == null) return;
+        if (data.nativeEvent == null) return;
+        if (data.nativeEvent.url == null) return;
+        this.url = data.nativeEvent.url
+        this.refWebview.injectJavaScript('var err=document.querySelector("#content > ul");null==err?console.log("ok"):window.ReactNativeWebView.postMessage("logout");var c =document.querySelector("#wrap > div.header_wrapper > div.navigation > a"); c.setAttribute("href","");var b = document.getElementsByClassName("footer")[0]; b.remove();b = document.getElementsByClassName("helpLink")[0]; b.remove();var popup=document.querySelector("body > div.popup_overlay"),observer=new MutationObserver(function(){"none"!=popup.style.display&&(window.ReactNativeWebView.postMessage("NeedReload!"),popup.style.display="none")});observer.observe(popup,{attributes:!0,childList:!0});')
 
         if (data.nativeEvent.url.includes("https://grade.") && this.state.countOfLoading == 0) {
             this.setState({ countOfLoading: 1, isShow: false })
             return
         }
 
-        this.refWebview.injectJavaScript('var c =document.querySelector("#wrap > div.header_wrapper > div.navigation > a"); c.setAttribute("href","");var b = document.getElementsByClassName("footer")[0]; b.remove();b = document.getElementsByClassName("helpLink")[0]; b.remove();var popup=document.querySelector("body > div.popup_overlay"),observer=new MutationObserver(function(){"none"!=popup.style.display&&(window.ReactNativeWebView.postMessage("NeedReload!"),popup.style.display="none")});observer.observe(popup,{attributes:!0,childList:!0});')
         if (data.nativeEvent.url.includes("https://grade.") && !this.state.isShow) {
             await new Promise(r => setTimeout(r, 250));
-            this.setState({ isShow: true, isRefreshing: false,badUrls:0 })
+            this.setState({ isShow: true, isRefreshing: false, badUrls: 0 })
         }
     }
 
     refWebview = null
 
     onSwipeLeft(state) {
-        this.refWebview.goBack()
+        if (this.state.isShow) {
+            if (this.url != 'https://grade.sfedu.ru/') {
+                this.refWebview.goBack()
+            }
+        }
     }
 
 
@@ -148,7 +165,7 @@ export default class BRS extends Component<Props, State> {
                         injectedJavaScript={this.state.injection}
                         onLoadEnd={(i) => { this.handleNavChange(i) }}
                         showsVerticalScrollIndicator={false}
-                        onMessage={(i) => { if (i.nativeEvent.data == "NeedReload!") { console.log("reload"); } }}
+                        onMessage={(i) => { if (i.nativeEvent.data == "NeedReload!") { /*Иногда по 2 раза рефрешит*/ }; if (i.nativeEvent.data == "logout") { this.logout() } }}
                         sharedCookiesEnabled
                         thirdPartyCookiesEnabled
                         domStorageEnabled
