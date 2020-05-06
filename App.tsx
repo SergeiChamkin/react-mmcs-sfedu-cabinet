@@ -34,14 +34,14 @@ TaskManager.defineTask("BACKGROUND_CHECK_MARKS", async () => {
     var bb = await SecureStore.getItemAsync("nightCheck")
     if (bb != null) global.nightSwitch = bb == "true"
 
-    if(!b){
+    if (!b) {
       return BackgroundFetch.Result.NoData
     }
 
-    var h= new Date().getHours();
+    var h = new Date().getHours();
 
-    if(bb){
-      if(h>21 || h<7){
+    if (bb) {
+      if (h > 21 || h < 7) {
         return BackgroundFetch.Result.NoData
       }
     }
@@ -102,10 +102,10 @@ export default class App extends React.Component<Props, State> {
   async componentDidMount() {
     try {
       await BackgroundFetch.unregisterTaskAsync("BACKGROUND_CHECK_MARKS") //idn?(+)
+      await BackgroundFetch.registerTaskAsync("BACKGROUND_CHECK_MARKS", { minimumInterval: 60 * 30 })
     } catch (e) {
-      console.log(e)
+
     }
-    await BackgroundFetch.registerTaskAsync("BACKGROUND_CHECK_MARKS", { minimumInterval: 60 * 30 })
     BackgroundFetch.setMinimumIntervalAsync(60 * 30)
     console.log(await TaskManager.getRegisteredTasksAsync())
 
@@ -134,9 +134,10 @@ export default class App extends React.Component<Props, State> {
     var password = await SecureStore.getItemAsync("password");
 
 
-    this.setState({screen:"login", isReady:true})
-    return 
-
+    /*
+    this.setState({ screen: "login", isReady: true })
+    return
+    */
 
     if (username == null || password == null) {
       this.setState({ screen: "login", isReady: true })
