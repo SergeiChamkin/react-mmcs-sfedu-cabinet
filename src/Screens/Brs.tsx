@@ -33,7 +33,8 @@ export default class BRS extends Component<Props, State> {
 
 
     async checker(val) {
-        this.sleep(5200).then(() => {
+        console.log("Started:"+val)
+        this.sleep(4000).then(() => {
             if (this.state.isShow == false && this.backCount == val) {
                 Alert.alert(
                     'Ошибка',
@@ -50,7 +51,7 @@ export default class BRS extends Component<Props, State> {
 
     async refresh(val) {
         this.backCount++; //Невероятно красивое решение!!!!!!!!!!!!!!!!!!
-        this.checker(val);
+        this.checker(this.backCount);
         this.username = await SecureStore.getItemAsync("username");
         this.password = await SecureStore.getItemAsync("password");
         this.setState({ url: 'https://openid.sfedu.ru/server.php?openid.return_to=http%3A%2F%2Fgrade.sfedu.ru%2Fhandler%2Fsign%2Fopenidfinish%3Fuser_role%3Dstudent&openid.mode=checkid_setup&openid.identity=https%3A%2F%2Fopenid.sfedu.ru%2Fserver.php%2Fidpage%3Fuser%3D' + this.username + '&openid.trust_root=http%3A%2F%2Fgrade.sfedu.ru&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.claimed_id=https%3A%2F%2Fopenid.sfedu.ru%2Fserver.php%2Fidpage%3Fuser%3D' + this.username + '&openid.realm=http%3A%2F%2Fgrade.sfedu.ru&openid.ns.sreg=http://openid.net/extensions/sreg/1.1&openid.sreg.optional=email%2Cnickname%2Cr61globalkey%2Cstaff%2Cstudent%2Cr61studentid&', injection: "document.querySelector('#foo > table > tbody > tr:nth-child(1) > td > input[type=password]').value = '" + this.password + "';document.querySelector('#foo > table > tbody > tr:nth-child(2) > td > input[type=submit]:nth-child(1)').click();" })
