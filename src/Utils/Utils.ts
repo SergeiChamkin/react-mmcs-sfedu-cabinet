@@ -11,7 +11,7 @@ async function authUser(username, password) {
         bodyFormData.append('openid_url', username);
         bodyFormData.append('password', password);
         var answ = undefined
-        //Делаем запрос в единому сервису авторизации
+        //Делаем запрос к единому сервису авторизации
         await fetch("https://openid.sfedu.ru/server.php/login", {
             method: "POST",
             credentials: "same-origin",

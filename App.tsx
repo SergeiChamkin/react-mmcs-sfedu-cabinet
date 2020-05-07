@@ -62,7 +62,10 @@ TaskManager.defineTask("BACKGROUND_CHECK_MARKS", async () => {
     }
     var newMarks = await getMarks(username, password)
     console.log(newMarks + " vs " + prev)
-    if (prev != newMarks) {
+    
+    //prev != newMarks
+
+    if (1==1) {
       const localNotification = {
         title: "Выставленна новая оценка!",
         body: "Проверьте её в приложении",
@@ -91,9 +94,7 @@ TaskManager.defineTask("BACKGROUND_CHECK_MARKS", async () => {
 
 
 BackgroundFetch.registerTaskAsync("BACKGROUND_CHECK_MARKS", {
-  minimumInterval: 30 * 60,
-  stopOnTerminate: false,
-  startOnBoot: true
+  minimumInterval: 30 * 60
 });
 
 

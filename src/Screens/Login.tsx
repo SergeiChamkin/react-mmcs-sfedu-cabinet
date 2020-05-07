@@ -101,10 +101,13 @@ export default class LoginScreen extends Component<Props, State> {
   async auth() {
     Keyboard.dismiss()
     await fetch("https://openid.sfedu.ru/server.php/logout");
+    
     this.showAlert();
+
     if (this.state.isAuthClicked == true) {
       return
     }
+
     this.setState({ isAuthClicked: true, isBad: false, message: "Входим в аккаунт", progress: true }, async () => {
       try {
         var response = await authUser(this.state.username, this.state.password);

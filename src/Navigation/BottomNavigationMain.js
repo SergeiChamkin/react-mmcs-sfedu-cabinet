@@ -7,6 +7,7 @@ import { BackHandler } from 'react-native'
 import Settings from '../Screens/Settings'
 
 export default class BNavigation extends React.Component {
+  ref = ''
   state = {
     index: global.value == "Расписание" ? 0 : 1,
     routes: [
@@ -17,7 +18,7 @@ export default class BNavigation extends React.Component {
   };
 
   ScheduleRoute = () => <Schedule nav={(i) => { this.props.nav(i) }} />;
-  ref = ''
+  
   GradeRoute = () => <BRS ref={(r) => { this.ref = r }} nav={(i) => { this.props.nav(i) }}></BRS>;
 
   SettingsRoute = () => <Settings nav={(i) => { this.props.nav(i) }} />;
