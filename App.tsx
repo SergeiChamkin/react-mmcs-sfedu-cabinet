@@ -89,80 +89,83 @@ TaskManager.defineTask("BACKGROUND_CHECK_MARKS", async () => {
 });
 
 
+
+BackgroundFetch.registerTaskAsync("BACKGROUND_CHECK_MARKS", {
+  minimumInterval: 30 * 60,
+  stopOnTerminate: false,
+  startOnBoot: true
+});
+
+
 export default class App extends React.Component<Props, State> {
 
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      isReady: false,
-    };
-  }
+constructor(props) {
+  super(props);
+  this.state = {
+    isReady: false,
+  };
+}
 
-  async componentDidMount() {
-    try {
-      await BackgroundFetch.unregisterTaskAsync("BACKGROUND_CHECK_MARKS") //idn?(+)
-      await BackgroundFetch.registerTaskAsync("BACKGROUND_CHECK_MARKS", { minimumInterval: 60 * 30 })
-    } catch (e) {
+async componentDidMount() {
 
-    }
-    BackgroundFetch.setMinimumIntervalAsync(60 * 30)
-    console.log(await TaskManager.getRegisteredTasksAsync())
+  BackgroundFetch.setMinimumIntervalAsync(60 * 30)
+  console.log(await TaskManager.getRegisteredTasksAsync())
 
-    await Font.loadAsync({
-      Roboto: require('native-base/Fonts/Roboto.ttf'),
-      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
-      ...Ionicons.font,
-    });
+  await Font.loadAsync({
+    Roboto: require('native-base/Fonts/Roboto.ttf'),
+    Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+    ...Ionicons.font,
+  });
 
 
-    var sc = await SecureStore.getItemAsync("screen")
-    if (sc != null) global.value = sc;
-    else global.value = "Расписание"
+  var sc = await SecureStore.getItemAsync("screen")
+  if (sc != null) global.value = sc;
+  else global.value = "Расписание"
 
-    var b = await SecureStore.getItemAsync("backgroundCheck")
-    if (b != null) global.backSwitch = b == "true"
-    else global.backSwitch = true
-    var bb = await SecureStore.getItemAsync("nightCheck")
-    if (bb != null) global.nightSwitch = bb == "true"
-    else global.nightSwitch = false
-    console.log(global.nightSwitch)
-    ///
-    global.s = JSON.parse(await AsyncStorage.getItem("timetable"))
-    global.week = await getTypeOfWeek()
-    var username = await SecureStore.getItemAsync("username");
-    var password = await SecureStore.getItemAsync("password");
+  var b = await SecureStore.getItemAsync("backgroundCheck")
+  if (b != null) global.backSwitch = b == "true"
+  else global.backSwitch = true
+  var bb = await SecureStore.getItemAsync("nightCheck")
+  if (bb != null) global.nightSwitch = bb == "true"
+  else global.nightSwitch = false
+  console.log(global.nightSwitch)
+  ///
+  global.s = JSON.parse(await AsyncStorage.getItem("timetable"))
+  global.week = await getTypeOfWeek()
+  var username = await SecureStore.getItemAsync("username");
+  var password = await SecureStore.getItemAsync("password");
 
 
-    /*
+  /*
+  this.setState({ screen: "login", isReady: true })
+  return
+  */
+
+  if (username == null || password == null) {
     this.setState({ screen: "login", isReady: true })
     return
-    */
-
-    if (username == null || password == null) {
-      this.setState({ screen: "login", isReady: true })
-      return
-    }
-
-    this.setState({ isReady: true, screen: "BNavigation" });
-    //
   }
 
-  nav(where) {
-    this.setState({ screen: where })
-  }
+  this.setState({ isReady: true, screen: "BNavigation" });
+  //
+}
 
-  render() {
-    if (!this.state.isReady) {
-      return <AppLoading />;
-    }
-    if (this.state.screen == "login") {
-      return <LoginScreen nav={(i) => { this.nav(i) }} />
-    } else
-      return (
-        <BNavigation nav={(i) => { this.nav(i) }} />
-      );
+nav(where) {
+  this.setState({ screen: where })
+}
+
+render() {
+  if (!this.state.isReady) {
+    return <AppLoading />;
   }
+  if (this.state.screen == "login") {
+    return <LoginScreen nav={(i) => { this.nav(i) }} />
+  } else
+    return (
+      <BNavigation nav={(i) => { this.nav(i) }} />
+    );
+}
 
 }
 

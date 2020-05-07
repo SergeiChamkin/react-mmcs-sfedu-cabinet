@@ -3,8 +3,8 @@ import { TouchableOpacity, StyleSheet, Text, View, Alert, Linking } from 'react-
 import { TextInput } from 'react-native-paper';
 import { wS, hS } from "../Utils/Scale"
 export interface Props {
-    data:any
-    isActive?:boolean,
+    data: any
+    isActive?: boolean,
     //isPaired?:boolean,
 }
 
@@ -18,45 +18,45 @@ export default class RightBlock extends Component<Props, State> {
         super(props);
     }
 
-    componentDidMount(){
+    componentDidMount() {
     }
 
-    formatTeacherName(name){
+    formatTeacherName(name) {
 
-        var parts=name.split(" ");
-        if(parts.length>3){
+        var parts = name.split(" ");
+        if (parts.length > 3) {
             parts = (name.split("\n"))
-            parts= parts.map((item)=>{
+            parts = parts.map((item) => {
                 var p = item.split(" ")
-                return p[0]+" "+p[1].substr(0,1)+". "+p[2].substr(0,1)+".";
+                return p[0] + " " + p[1].substr(0, 1) + ". " + p[2].substr(0, 1) + ".";
             })
             return parts.join("\n")
         }
-        if(parts.length!=3) return name
-        return parts[0]+" "+parts[1].substr(0,1)+". "+parts[2].substr(0,1)+".";
+        if (parts.length != 3) return name
+        return parts[0] + " " + parts[1].substr(0, 1) + ". " + parts[2].substr(0, 1) + ".";
     }
 
-    formatSubject(){
-        if(this.props.data.subjectabbr==""){
+    formatSubject() {
+        if (this.props.data.subjectabbr == "") {
             return this.props.data.subjectname;
         } else return this.props.data.subjectabbr;
     }
 
-    getClearCab(cab){
+    getClearCab(cab) {
         var splitted = cab.split("\n")
-        splitted = splitted.map((item)=>{
-            if(item.indexOf("(")==-1){
+        splitted = splitted.map((item) => {
+            if (item.indexOf("(") == -1) {
                 return item
             }
-            else return item.substr(0,item.indexOf("("))
+            else return item.substr(0, item.indexOf("("))
         })
         return splitted.join("\n");
     }
 
-    onPresser(){
+    onPresser() {
         Alert.alert(
             'Информация',
-            'Предмет:\n'+this.props.data.subjectname+'\nПреподаватель:\n'+this.props.data.teachername+"\nСтепень преподавателя:\n"+this.props.data.teacherdegree+"\nКабинет:\n"+this.props.data.roomname,
+            'Предмет:\n' + this.props.data.subjectname + '\nПреподаватель:\n' + this.props.data.teachername + "\nСтепень преподавателя:\n" + this.props.data.teacherdegree + "\nКабинет:\n" + this.props.data.roomname,
             [
                 { text: 'Ок', onPress: () => console.log('OK Pressed') },
             ],
@@ -66,14 +66,14 @@ export default class RightBlock extends Component<Props, State> {
 
     render() {
         return (
-            <TouchableOpacity style={{flex:1}} onPress={()=>{this.onPresser()}}>
-            <View style={styles.rightBlock} id={this.props.data.id+"rightBlock"}>
-                <Text style={[this.props.isActive?styles.subjectTextGrey:styles.subjectText,styles.textUltra]}>{this.formatSubject()}</Text>
-                <View style={{flexDirection:"row",justifyContent:"space-between"}}>
-                <Text style={this.props.isActive?{color:"grey"}:{color:"black"}}>{this.formatTeacherName(this.props.data.teachername)}</Text>
-                <Text style={[{fontStyle:"italic"},this.props.isActive?{color:"grey"}:{color:"black"}]}>{this.getClearCab(this.props.data.roomname)}</Text>
+            <TouchableOpacity style={{ flex: 1 }} onPress={() => { this.onPresser() }} key={this.props.data.id + "-touch"+Math.random()}>
+                <View style={styles.rightBlock} key={this.props.data.id + "rightBlock"+Math.random()}>
+                    <Text style={[this.props.isActive ? styles.subjectTextGrey : styles.subjectText, styles.textUltra]} key={this.props.data.id+" subject"}>{this.formatSubject()}</Text>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                        <Text key={this.props.data.id + "-techer"} style={this.props.isActive ? { color: "grey" } : { color: "black" }}>{this.formatTeacherName(this.props.data.teachername)}</Text>
+                        <Text key={this.props.data.id + "-cab"} style={[{ fontStyle: "italic" }, this.props.isActive ? { color: "grey" } : { color: "black" }]}>{this.getClearCab(this.props.data.roomname)}</Text>
+                    </View>
                 </View>
-            </View>
             </TouchableOpacity>
         )
     }
@@ -84,21 +84,21 @@ const styles = StyleSheet.create({
     },
     subjectTextGrey: {
         fontSize: 19,
-        color:"grey"
+        color: "grey"
     },
-    greyText:{
-        color:"grey"
+    greyText: {
+        color: "grey"
     },
     rightBlock: {
-        flex:1,
-        marginLeft:wS(10),
-        flexDirection:"column",
-        justifyContent:"space-between"
+        flex: 1,
+        marginLeft: wS(10),
+        flexDirection: "column",
+        justifyContent: "space-between"
     },
     cabinetText: {
         fontWeight: "bold",
     },
-    textUltra:{
+    textUltra: {
         //!!!
     }
 });

@@ -23,7 +23,7 @@ export default class Settings extends Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
-        this.state = { selected: global.value, backSwitch: global.backSwitch, nightSwitch: global.nightSwitch}
+        this.state = { selected: global.value==null?"Расписание":global.value, backSwitch: global.backSwitch==null?true:global.backSwitch, nightSwitch: global.nightSwitch==null?false:global.nightSwitch}
     }
 
 
@@ -41,6 +41,11 @@ export default class Settings extends Component<Props, State> {
 
     onSwitchBackground(val) {
         console.log(!this.state.backSwitch)
+        if(!this.state.backSwitch==false){
+            SecureStore.setItemAsync("nightCheck",(false).toString())
+            this.setState({nightSwitch:false}) 
+        }
+
         SecureStore.setItemAsync("backgroundCheck",(!this.state.backSwitch).toString())
         this.setState({ backSwitch: !this.state.backSwitch })
     }
@@ -111,6 +116,7 @@ export default class Settings extends Component<Props, State> {
                                     ios_backgroundColor="#3e3e3e"
                                     onValueChange={(i) => { this.onSwitchBackgroundNight(i) }}
                                     value={this.state.nightSwitch}
+                                    disabled={!this.state.backSwitch}
                                 >
 
                                 </Switch>

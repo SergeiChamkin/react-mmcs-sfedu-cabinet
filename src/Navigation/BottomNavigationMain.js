@@ -8,7 +8,7 @@ import Settings from '../Screens/Settings'
 
 export default class BNavigation extends React.Component {
   state = {
-    index: global.value=="Расписание"?0:1,
+    index: global.value == "Расписание" ? 0 : 1,
     routes: [
       { key: 'schedule', title: 'Расписание', icon: 'table' },
       { key: 'grade', title: 'БРС', icon: 'checkbox-multiple-marked-circle-outline' },
@@ -16,21 +16,23 @@ export default class BNavigation extends React.Component {
     ],
   };
 
-  ScheduleRoute = () => <Schedule nav={(i)=>{this.props.nav(i)}} />;
-  ref=''
-  GradeRoute = () => <BRS ref={(r)=>{this.ref=r}} nav={(i)=>{this.props.nav(i)}}></BRS>;
+  ScheduleRoute = () => <Schedule nav={(i) => { this.props.nav(i) }} />;
+  ref = ''
+  GradeRoute = () => <BRS ref={(r) => { this.ref = r }} nav={(i) => { this.props.nav(i) }}></BRS>;
 
-  SettingsRoute = () => <Settings nav={(i)=>{this.props.nav(i)}}/>;
+  SettingsRoute = () => <Settings nav={(i) => { this.props.nav(i) }} />;
 
   _handleIndexChange = index => {
-    if(index==1){
-      if(this.ref!=''){
+    if (index == 1) {
+      if (this.ref != '') {
         this.ref.refresh()
       }
       //console.log(this.ref)
     }
-    if(index==0 || index==2){
-      this.ref.hiderwb()
+    if (index == 0 || index == 2) {
+      if (this.ref != '') {
+        this.ref.hiderwb()
+      }
     }
     this.setState({ index });
   }

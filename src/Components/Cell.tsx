@@ -36,9 +36,9 @@ export default class Cell extends Component<Props, State> {
         var temp = []
 
         for (var i = from; i < (from + 2) && (i < data.length); i++) {
-            temp.push(<RightBlock isActive={((type=="full"||type=="-1")?false:(this.props.typeWeek==type))} typeWeek={this.props.typeWeek} data={data[i]} id={"RightBlock" + data[i].id} />)
+            temp.push(<RightBlock isActive={((type=="full"||type=="-1")?false:(this.props.typeWeek==type))} typeWeek={this.props.typeWeek} data={data[i]} key={"RightBlock " + data[i].id+Math.random()} />)
         }
-        return <View style={{ flexDirection: "row", marginTop: (from >= 2 ? hS(15) : 0), paddingTop: (from >= 2 ? hS(15) : 0), borderTopWidth: (from >= 2 ? 0 : 0), borderTopColor: "grey" }} id={"ROW" + data[from].id}>{temp}</View>;
+        return <View key={Math.random()+" divider"} style={{ flexDirection: "row", marginTop: (from >= 2 ? hS(15) : 0), paddingTop: (from >= 2 ? hS(15) : 0), borderTopWidth: (from >= 2 ? 0 : 0), borderTopColor: "grey" }} id={"ROW" + data[from].id}>{temp}</View>;
     }
 
     generator() {
@@ -67,7 +67,7 @@ export default class Cell extends Component<Props, State> {
 
     render() {
         return (
-            <View style={{ flexDirection: "row", marginTop: hS(22), marginLeft: wS(17), marginRight: wS(17) }}>
+            <View style={{ flexDirection: "row", marginTop: hS(22), marginLeft: wS(17), marginRight: wS(17) }} key={Math.random()+" RTC"}>
                 <View style={styles.timeView}>
                     <View style={{ flexDirection: "column", justifyContent: "center" }}>
                         <Text style={styles.timeText} id={this.props.subjects.time[1] + this.props.id}>

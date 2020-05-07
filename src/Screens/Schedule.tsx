@@ -236,7 +236,7 @@ export default class Schedule extends Component {
             if (this.state.timetable.lessons[i].timeslot[0] != currDay) {
                 this.usedDays[currDay] = true
                 answ.push(
-                    <Tab heading={this.getDay(currDay)} tabStyle={{ backgroundColor: theme.colors.primary, elevation: 0 }} activeTabStyle={{ backgroundColor: theme.colors.primary }} textStyle={{ fontSize: 18, color: "white" }} activeTextStyle={{ fontSize: 18, color: "white" }}>
+                    <Tab key={this.getDay(currDay)} heading={this.getDay(currDay)} tabStyle={{ backgroundColor: theme.colors.primary, elevation: 0 }} activeTabStyle={{ backgroundColor: theme.colors.primary }} textStyle={{ fontSize: 18, color: "white" }} activeTextStyle={{ fontSize: 18, color: "white" }}>
                         <ScrollView style={{ flex: 1 }} bounces={false}>
                             {lessons}
                             <View style={{ height: hS(28) }}></View>
@@ -249,13 +249,13 @@ export default class Schedule extends Component {
             this.usedDays[currDay] = true
             lessons.push(
                 <Cell
-                    typeWeek={global.week} id={"CELL" + this.state.timetable.lessons[i].id + Math.random()} subjects={{ time: this.state.timetable.lessons[i].times, data: this.getData(this.state.timetable.lessons[i].id, i, this.state.timetable.lessons[i].timeslot[3]) }}
+                    typeWeek={global.week} key={"CELL" + this.state.timetable.lessons[i].id + Math.random()} subjects={{ time: this.state.timetable.lessons[i].times, data: this.getData(this.state.timetable.lessons[i].id, i, this.state.timetable.lessons[i].timeslot[3]) }}
                 />
             )
         }
         this.tab=this.getRelevantIndex()
         answ.push(
-            <Tab heading={this.getDay(currDay)} tabStyle={{ backgroundColor: theme.colors.primary, elevation: 0 }} activeTabStyle={{ backgroundColor: theme.colors.primary }} textStyle={{ fontSize: 18, color: "white" }} activeTextStyle={{ fontSize: 18, color: "white" }}>
+            <Tab key={this.getDay(currDay)} heading={this.getDay(currDay)} tabStyle={{ backgroundColor: theme.colors.primary, elevation: 0 }} activeTabStyle={{ backgroundColor: theme.colors.primary }} textStyle={{ fontSize: 18, color: "white" }} activeTextStyle={{ fontSize: 18, color: "white" }}>
                 <ScrollView style={{ flex: 1 }} bounces={false}>
                     {lessons}
                     <View style={{ height: hS(28) }}></View>
