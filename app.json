@@ -11,7 +11,9 @@
     ],
     "android": {
       "package": "com.chamkin.mmcshome",
-      "versionCode": 1
+      "permissions": [
+      ],
+      "versionCode": 2
     },
     "androidStatusBar": {
       "barStyle": "dark-content",

@@ -65,7 +65,7 @@ TaskManager.defineTask("BACKGROUND_CHECK_MARKS", async () => {
     
     //prev != newMarks
 
-    if (1==1) {
+    if (prev != newMarks) {
       const localNotification = {
         title: "Выставленна новая оценка!",
         body: "Проверьте её в приложении",
