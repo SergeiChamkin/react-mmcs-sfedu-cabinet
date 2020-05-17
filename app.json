@@ -13,7 +13,7 @@
       "package": "com.chamkin.mmcshome",
       "permissions": [
       ],
-      "versionCode": 2
+      "versionCode": 3
     },
     "androidStatusBar": {
       "barStyle": "dark-content",

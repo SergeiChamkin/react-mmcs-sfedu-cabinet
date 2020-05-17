@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { refreshSchedule, getTypeOfWeek } from "../Utils/Utils"
 import Constants from 'expo-constants'
 
-export interface Props { nav: any }
+export interface Props { nav: any,f: any }
 
 interface State {
     typeWeek: string;
@@ -62,7 +62,9 @@ export default class Schedule extends Component {
     _handleAppStateChange = nextAppState => {
         if (nextAppState === "active") {
             if (!this.state.isRefreshing) {
+                if(this.props.f()==0){
                 this.setState({ isRefreshing: true }, async () => { this.refresh() })
+                }
             }
             this.forceUpdate()
         }

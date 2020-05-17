@@ -17,9 +17,11 @@ export default class BNavigation extends React.Component {
     ],
   };
 
-  ScheduleRoute = () => <Schedule nav={(i) => { this.props.nav(i) }} />;
+
+
+  ScheduleRoute = () => <Schedule nav={(i) => { this.props.nav(i) }} f={()=>this.state.index} />;
   
-  GradeRoute = () => <BRS ref={(r) => { this.ref = r }} nav={(i) => { this.props.nav(i) }}></BRS>;
+  GradeRoute = () => <BRS ref={(r) => { this.ref = r }} nav={(i) => { this.props.nav(i) }}  f={()=>this.state.index} ></BRS>;
 
   SettingsRoute = () => <Settings nav={(i) => { this.props.nav(i) }} />;
 

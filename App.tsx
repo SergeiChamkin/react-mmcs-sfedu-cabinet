@@ -26,6 +26,12 @@ interface State {
 
 TaskManager.defineTask("BACKGROUND_CHECK_MARKS", async () => {
   console.log("Started")
+  var perm = await Permissions.getAsync(Permissions.NOTIFICATIONS)
+  console.log(perm.permissions.notifications.status=="granted")
+  if(perm.permissions.notifications.status!="granted"){
+    return BackgroundFetch.Result.NoData
+  }
+
   try {
 
     var b = await SecureStore.getItemAsync("backgroundCheck")
@@ -110,8 +116,13 @@ constructor(props) {
 
 async componentDidMount() {
 
+  var perm = await Permissions.getAsync(Permissions.NOTIFICATIONS)
+  console.log(perm.permissions.notifications.status=="granted")
+  if(perm.permissions.notifications.status!="granted"){
+    console.log("NO")
+  } else console.log("yes")
   BackgroundFetch.setMinimumIntervalAsync(60 * 30)
-  console.log(await TaskManager.getRegisteredTasksAsync())
+  //console.log(await TaskManager.getRegisteredTasksAsync())
 
   await Font.loadAsync({
     Roboto: require('native-base/Fonts/Roboto.ttf'),
