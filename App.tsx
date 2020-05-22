@@ -61,15 +61,14 @@ TaskManager.defineTask("BACKGROUND_CHECK_MARKS", async () => {
 
     var prev = await SecureStore.getItemAsync("prev");
     if (prev == undefined) {
-      console.log("Установил оценки")
+      //console.log("Установил оценки")
       prev = await getMarks(username, password)
       await SecureStore.setItemAsync("prev", prev)
       return BackgroundFetch.Result.NewData
     }
     var newMarks = await getMarks(username, password)
-    console.log(newMarks + " vs " + prev)
-    
-    //prev != newMarks
+    //console.log(newMarks + " vs " + prev)
+
 
     if (prev != newMarks) {
       const localNotification = {
@@ -117,10 +116,8 @@ constructor(props) {
 async componentDidMount() {
 
   var perm = await Permissions.getAsync(Permissions.NOTIFICATIONS)
-  console.log(perm.permissions.notifications.status=="granted")
-  if(perm.permissions.notifications.status!="granted"){
-    console.log("NO")
-  } else console.log("yes")
+  //console.log(perm.permissions.notifications.status=="granted")
+
   BackgroundFetch.setMinimumIntervalAsync(60 * 30)
   //console.log(await TaskManager.getRegisteredTasksAsync())
 
@@ -141,8 +138,6 @@ async componentDidMount() {
   var bb = await SecureStore.getItemAsync("nightCheck")
   if (bb != null) global.nightSwitch = bb == "true"
   else global.nightSwitch = false
-  console.log(global.nightSwitch)
-  ///
   global.s = JSON.parse(await AsyncStorage.getItem("timetable"))
   global.week = await getTypeOfWeek()
   var username = await SecureStore.getItemAsync("username");

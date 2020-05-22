@@ -100,9 +100,8 @@ export default class LoginScreen extends Component<Props, State> {
 
   async auth() {
     Keyboard.dismiss()
-    await fetch("https://openid.sfedu.ru/server.php/logout");
-    
     this.showAlert();
+    
 
     if (this.state.isAuthClicked == true) {
       return
@@ -110,6 +109,7 @@ export default class LoginScreen extends Component<Props, State> {
 
     this.setState({ isAuthClicked: true, isBad: false, message: "Входим в аккаунт", progress: true }, async () => {
       try {
+        //await fetch("https://openid.sfedu.ru/server.php/logout",2500);
         var response = await authUser(this.state.username, this.state.password);
         if (response.includes("Вы вошли как")) {
           await this.sleep(750)
@@ -124,7 +124,7 @@ export default class LoginScreen extends Component<Props, State> {
           this.setState({ message: "Неверные данные!", isBad: true, isAuthClicked: false, password: "", isPasswordGood: false, progress: false })
         }
       } catch (err) {
-        this.setState({ message: "Ошибка!", isBad: true, isAuthClicked: false, password: "", isPasswordGood: false, progress: false })
+        this.setState({ message: "Ошибка c сетью!", isBad: true, isAuthClicked: false, password: "", isPasswordGood: false, progress: false })
       }
     })
   }

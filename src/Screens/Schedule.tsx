@@ -12,23 +12,25 @@ import { Ionicons } from '@expo/vector-icons';
 import { refreshSchedule, getTypeOfWeek } from "../Utils/Utils"
 import Constants from 'expo-constants'
 
-export interface Props { nav: any,f: any }
+export interface Props { nav: any, f: any }
 
 interface State {
     typeWeek: string;
     isLoading: boolean;
     timetable: any;
     importantTitle: string;
-    isRefreshing: boolean;
-    selectedTab:number
+    selectedTab: number
 }
 
 export default class Schedule extends Component {
-
+    isRefreshing = false;
 
     async refresh() {
         try {
-            this.tab=this.getRelevantIndex();
+            console.log("started!")
+            var oldTab=this.tab;
+            this.tab = this.getRelevantIndex();
+            if(oldTab!=this.tab) this.forceUpdate();
             var newWeek = await getTypeOfWeek();
             var oldTimetable = await AsyncStorage.getItem("timetable");
             var newTimeTable = await refreshSchedule();
@@ -42,17 +44,22 @@ export default class Schedule extends Component {
 
             //console.log(oldTimetable)
             //console.log("new week:" + newWeek)
-
-            if (newWeek != this.state.week) {
+            if (newWeek != (this.state.typeWeek.includes("верх") ? 0 : this.state.typeWeek.includes("ниж") ? 1 : -1)) {
+                this.isRefreshing = false
                 if (reloadTimetable) {
-                    this.setState({ typeWeek: newWeek, isRefreshing: false, timetable: global.s })
+                    this.setState({ typeWeek: newWeek, timetable: global.s })
                 } else {
-                    this.setState({ typeWeek: newWeek, isRefreshing: false })
+                    this.setState({ typeWeek: newWeek })
                 }
                 this.getStringTypeOfWeek()
+                this.forceUpdate()
+                return
             }
+
             console.log("ended background update!")
-            this.forceUpdate()
+            if (reloadTimetable) this.forceUpdate()
+            //this.setState({isRefreshing:false})
+            this.isRefreshing = false
 
         } catch (err) {
             console.log(err)
@@ -61,12 +68,13 @@ export default class Schedule extends Component {
 
     _handleAppStateChange = nextAppState => {
         if (nextAppState === "active") {
-            if (!this.state.isRefreshing) {
-                if(this.props.f()==0){
-                this.setState({ isRefreshing: true }, async () => { this.refresh() })
+            if (!this.isRefreshing) {
+                if (this.props.f() == 0) {
+                    this.isRefreshing = true
+                    this.refresh()
                 }
             }
-            this.forceUpdate()
+            //this.forceUpdate()
         }
     };
 
@@ -74,12 +82,13 @@ export default class Schedule extends Component {
     constructor(props: Props) {
         super(props);
         moment.updateLocale('ru', momentRU);
-        this.state = { typeWeek: global.week, isLoading: false, timetable: global.s, importantTitle: "", isRefreshing: false }
+        this.state = { typeWeek: global.week, isLoading: false, timetable: global.s, importantTitle: "" }
+        this.tab = -1
     }
 
 
     async componentDidMount() {
-        this.tab=this.getRelevantIndex();
+        this.tab = this.getRelevantIndex();
         //this.refresh();
         AppState.addEventListener("change", this._handleAppStateChange);
         this.getStringTypeOfWeek();
@@ -187,17 +196,17 @@ export default class Schedule extends Component {
 
     posInUsed(index) {
         var iter = 0;
-        for (var i = 0; i <=index; i++) {
+        for (var i = 0; i <= index; i++) {
             if (this.usedDays[i]) {
                 iter++;
             }
         }
-        return iter==0?0:iter-1;
+        return iter == 0 ? 0 : iter - 1;
     }
 
     getRelevantIndex() {
         //console.log(this.usedDays)
-        var currDay=new Date().getDay()-1
+        var currDay = new Date().getDay() - 1
         for (var i = 0; i < 6; i++) {
             if (!this.usedDays[i]) {
                 continue
@@ -221,8 +230,8 @@ export default class Schedule extends Component {
         return 0;
     }
 
-    tab=0;
-    reft='';
+    tab = 0;
+    reft = '';
     generateTabs() {
         this.usedDays = new Array(6).fill(false)
         var answ = []
@@ -255,7 +264,7 @@ export default class Schedule extends Component {
                 />
             )
         }
-        this.tab=this.getRelevantIndex()
+        if (this.tab == -1) this.tab = this.getRelevantIndex()
         answ.push(
             <Tab key={this.getDay(currDay)} heading={this.getDay(currDay)} tabStyle={{ backgroundColor: theme.colors.primary, elevation: 0 }} activeTabStyle={{ backgroundColor: theme.colors.primary }} textStyle={{ fontSize: 18, color: "white" }} activeTextStyle={{ fontSize: 18, color: "white" }}>
                 <ScrollView style={{ flex: 1 }} bounces={false}>
@@ -268,7 +277,7 @@ export default class Schedule extends Component {
         return (
             <Tabs prerenderingSiblingsNumber={10} style={{ flex: 1, elevation: 0 }} noShadow={true} tabContainerStyle={{
                 elevation: 0
-            }} initialPage={this.tab} ref={(r)=>{this.reft=r}} page={this.tab} onChangeTab={(i)=>{this.tab=i}}>
+            }} initialPage={this.tab} ref={(r) => { this.reft = r }} page={this.tab} onChangeTab={(i) => { this.tab = i }}>
                 {answ}
             </Tabs>
         )
@@ -291,7 +300,7 @@ export default class Schedule extends Component {
     getClearTime() {
         var rawtime = moment().format('llll');
         rawtime = rawtime.replace(",", "").split(" ")
-        rawtime = rawtime[1] + " " + rawtime[2]+" ("+rawtime[0].toUpperCase()+")"
+        rawtime = rawtime[1] + " " + rawtime[2] + " (" + rawtime[0].toUpperCase() + ")"
         return rawtime
     }
 
@@ -346,7 +355,7 @@ export default class Schedule extends Component {
             <View style={{ flex: 1 }}>
 
                 <Header style={{ backgroundColor: theme.colors.primary, flexDirection: "row", justifyContent: "center", width: "100%" }} noShadow={true} androidStatusBarColor={theme.colors.primary}>
-                    <View style={{ flexDirection: "row", marginLeft: wS(12), marginRight: wS(12), justifyContent: "space-between", flex: 1,alignSelf:"center" }}>
+                    <View style={{ flexDirection: "row", marginLeft: wS(12), marginRight: wS(12), justifyContent: "space-between", flex: 1, alignSelf: "center" }}>
                         {this.state.importantTitle != "" ? <Text style={{ fontSize: 20, color: "white", alignSelf: "center", width: wS(500) }}>{this.state.importantTitle}</Text> :
                             <View style={{ flexDirection: "row" }}>
                                 <Text style={{ fontSize: 20, color: "white", alignSelf: "center" }}>{this.getClearTime()}</Text>
@@ -356,7 +365,7 @@ export default class Schedule extends Component {
                         }
                     </View>
 
-                    <Right style={{alignSelf:"center"}}>
+                    <Right style={{ alignSelf: "center" }}>
                         <TouchableOpacity style={{ flexDirection: "row", marginRight: wS(8) }} onPress={() => { this.refreshScheduleClicked() }}>
                             <Ionicons name="md-refresh" size={32} color="white" />
                         </TouchableOpacity>
