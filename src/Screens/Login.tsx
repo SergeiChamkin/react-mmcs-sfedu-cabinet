@@ -72,6 +72,15 @@ export default class LoginScreen extends Component<Props, State> {
           ],
           { cancelable: false },
         );
+      } else{
+        Alert.alert(
+          'Информация',
+          'Данное приложение может уведомлять о новых оценках, для этого оставьте приложение работать в фоне.',
+          [
+            { text: 'Ок', onPress: async () =>{console.log("ok")} },
+          ],
+          { cancelable: true },
+        );
       }
     }
   }
