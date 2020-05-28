@@ -115,8 +115,9 @@ constructor(props) {
 
 async componentDidMount() {
 
+
   var perm = await Permissions.getAsync(Permissions.NOTIFICATIONS)
-  //console.log(perm.permissions.notifications.status=="granted")
+  console.log(perm.permissions.notifications.status=="granted")
 
   BackgroundFetch.setMinimumIntervalAsync(60 * 30)
   //console.log(await TaskManager.getRegisteredTasksAsync())

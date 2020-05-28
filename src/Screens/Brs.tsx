@@ -135,10 +135,16 @@ export default class BRS extends Component<Props, State> {
             await new Promise(r => setTimeout(r, 250));
             this.setState({ isShow: true, isRefreshing: false, badUrls: 0 })
         }
+
+        if(data.nativeEvent.url.includes("https://grade.") && this.state.isShow){
+            this.refWebview.injectJavaScript('var check=document.querySelector("#wrap > div.main_layer > div.main > div > div.AuthForm > h2");null!=check?window.ReactNativeWebView.postMessage("refresh"):window.ReactNativeWebView.postMessage("ok");')
+        }
+
     }
 
     refWebview = null
 
+    //Ну вообще говоря как бы направо
     onSwipeLeft(state) {
         if (this.state.isShow) {
             if (this.url != 'https://grade.sfedu.ru/') {
@@ -150,8 +156,8 @@ export default class BRS extends Component<Props, State> {
 
     render() {
         const config = {
-            velocityThreshold: 0.01,
-            directionalOffsetThreshold: 95
+            velocityThreshold: 0.05,
+            directionalOffsetThreshold: 58
         };
         return (
             <View style={{ flex: 1 }}>
@@ -170,7 +176,7 @@ export default class BRS extends Component<Props, State> {
                         injectedJavaScript={this.state.injection}
                         onLoadEnd={(i) => { this.handleNavChange(i) }}
                         showsVerticalScrollIndicator={false}
-                        onMessage={(i) => { if (i.nativeEvent.data == "NeedReload!" && this.state.isShow) { /*this.refresh()*/ }; if (i.nativeEvent.data == "logout") { this.logout() };if(i.nativeEvent.data=="refresh"){console.log("refresher");this.backCount++;this.refresh(this.backCount);} }}
+                        onMessage={(i) => {if (i.nativeEvent.data == "NeedReload!" && this.state.isShow) { /*this.refresh()*/ }; if (i.nativeEvent.data == "logout") { this.logout() };if(i.nativeEvent.data=="refresh"){console.log("refresher");this.backCount++;this.refresh(this.backCount);} }}
                         sharedCookiesEnabled
                         thirdPartyCookiesEnabled
                         domStorageEnabled

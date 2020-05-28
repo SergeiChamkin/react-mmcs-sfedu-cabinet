@@ -58,7 +58,6 @@ export default class Schedule extends Component {
 
             console.log("ended background update!")
             if (reloadTimetable) this.forceUpdate()
-            //this.setState({isRefreshing:false})
             this.isRefreshing = false
 
         } catch (err) {

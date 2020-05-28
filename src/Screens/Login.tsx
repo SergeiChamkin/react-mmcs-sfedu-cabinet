@@ -59,18 +59,20 @@ export default class LoginScreen extends Component<Props, State> {
 
   async componentDidMount() {
     var isFirst = await SecureStore.getItemAsync("isFirstLogin")
-    console.log(isFirst)
     if (isFirst == null) {
       await SecureStore.setItemAsync("isFirstLogin", "1")
-      Alert.alert(
-        'Информация',
-        'Сейчас Вам предложат включить уведомления, это нужно для того, чтобы приложение могло в фоне уведомлять о новых оценках. Уведомления можно включить в настройках телефона',
-        [
-          { text: 'Ок', onPress: async () => this.askPermition() },
-        ],
-        { cancelable: false },
-      );
-
+      var perm = await Permissions.getAsync(Permissions.NOTIFICATIONS)
+      //console.log(perm)
+      if(perm.permissions.notifications.status!="granted"){
+        Alert.alert(
+          'Информация',
+          'Сейчас Вам предложат включить уведомления, это нужно для того, чтобы приложение могло в фоне уведомлять о новых оценках. Уведомления можно включить в настройках телефона',
+          [
+            { text: 'Ок', onPress: async () => this.askPermition() },
+          ],
+          { cancelable: false },
+        );
+      }
     }
   }
 
