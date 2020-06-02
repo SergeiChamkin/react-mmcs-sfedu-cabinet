@@ -13,11 +13,11 @@
       "package": "com.chamkin.mmcshome",
       "permissions": [
       ],
-      "versionCode": 8
+      "versionCode": 10
     },
     "androidStatusBar": {
       "barStyle": "dark-content",
-      "backgroundColor": "#600EE6"
+      "backgroundColor": "#0183ce"
     },
     "version": "1.0.0",
     "orientation": "portrait",

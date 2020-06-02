@@ -52,6 +52,7 @@ export default class BNavigation extends React.Component {
         navigationState={this.state}
         onIndexChange={this._handleIndexChange}
         renderScene={this._renderScene}
+        barStyle={{backgroundColor:"#0183ce"}}
       />
     );
   }

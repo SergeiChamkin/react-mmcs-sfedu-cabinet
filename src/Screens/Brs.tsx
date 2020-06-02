@@ -161,7 +161,7 @@ export default class BRS extends Component<Props, State> {
         };
         return (
             <View style={{ flex: 1 }}>
-                {!this.state.isShow && <View style={{ height: "100%", justifyContent: "center" }}><Spinner style={{ alignSelf: "center" }} color={"#600EE6"} /></View>}
+                {!this.state.isShow && <View style={{ height: "100%", justifyContent: "center" }}><Spinner style={{ alignSelf: "center" }} color={"#0183ce"} /></View>}
                 <GestureRecognizer
                     onSwipeRight={(state) => this.onSwipeLeft(state)}
                     config={config}
