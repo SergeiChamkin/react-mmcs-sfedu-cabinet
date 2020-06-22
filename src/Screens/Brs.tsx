@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, StyleSheet, Text, View, Alert, Linking, AppState, BackHandler } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, View, Alert, Linking, AppState, BackHandler,Platform } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { wS, hS } from "../Utils/Scale"
 import { WebView } from 'react-native-webview';
@@ -7,6 +7,7 @@ import { Spinner } from 'native-base';
 import * as SecureStore from 'expo-secure-store';
 import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 import { authUser } from "../Utils/Utils"
+import Constants from 'expo-constants';
 export interface Props {
     nav: any;
     f:any;
@@ -34,6 +35,7 @@ export default class BRS extends Component<Props, State> {
 
 
     async checker(val) {
+        if(val==undefined) val = 0;
         console.log("Started:"+val)
         this.sleep(5000).then(() => {
             if (this.state.isShow == false && this.backCount == val && this.props.f()==1) {
@@ -42,7 +44,7 @@ export default class BRS extends Component<Props, State> {
                     'Ошибка',
                     'Не удалось загрузить страницу',
                     [
-                        { text: 'Я подожду', onPress: () => console.log('OK Pressed') },
+                        { text: 'Подождать', onPress: () => console.log('OK Pressed') },
                         { text: 'Перезагрузить', onPress: () => this.refresh() },
                     ],
                     { cancelable: true },
@@ -53,8 +55,8 @@ export default class BRS extends Component<Props, State> {
 
     async refresh(val) {
         console.log("refreshing")
-        this.backCount++; //Невероятно красивое решение!!!!!!!!!!!!!!!!!!
-        this.checker(this.backCount+0);
+        this.backCount++;
+        this.checker(this.backCount==null?0:this.backCount);
         this.username = await SecureStore.getItemAsync("username");
         this.password = await SecureStore.getItemAsync("password");
         this.setState({ url: 'https://openid.sfedu.ru/server.php?openid.return_to=http%3A%2F%2Fgrade.sfedu.ru%2Fhandler%2Fsign%2Fopenidfinish%3Fuser_role%3Dstudent&openid.mode=checkid_setup&openid.identity=https%3A%2F%2Fopenid.sfedu.ru%2Fserver.php%2Fidpage%3Fuser%3D' + this.username + '&openid.trust_root=http%3A%2F%2Fgrade.sfedu.ru&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.claimed_id=https%3A%2F%2Fopenid.sfedu.ru%2Fserver.php%2Fidpage%3Fuser%3D' + this.username + '&openid.realm=http%3A%2F%2Fgrade.sfedu.ru&openid.ns.sreg=http://openid.net/extensions/sreg/1.1&openid.sreg.optional=email%2Cnickname%2Cr61globalkey%2Cstaff%2Cstudent%2Cr61studentid&', injection: "document.querySelector('#foo > table > tbody > tr:nth-child(1) > td > input[type=password]').value = '" + this.password + "';document.querySelector('#foo > table > tbody > tr:nth-child(2) > td > input[type=submit]:nth-child(1)').click();" })
@@ -133,6 +135,7 @@ export default class BRS extends Component<Props, State> {
         if (data.nativeEvent.url.includes("https://grade.") && !this.state.isShow) {
             this.refWebview.injectJavaScript('var a=document.querySelector("#wrap > div.main_layer > div.main > div > div.AuthForm > h2");if(a!=null){window.ReactNativeWebView.postMessage("refresh")}')
             await new Promise(r => setTimeout(r, 250));
+            console.log("Загрузил ок!")
             this.setState({ isShow: true, isRefreshing: false, badUrls: 0 })
         }
 
@@ -144,8 +147,7 @@ export default class BRS extends Component<Props, State> {
 
     refWebview = null
 
-    //Ну вообще говоря как бы направо
-    onSwipeLeft(state) {
+    onSwipeRight(state) {
         if (this.state.isShow) {
             if (this.url != 'https://grade.sfedu.ru/') {
                 this.refWebview.goBack()
@@ -161,9 +163,10 @@ export default class BRS extends Component<Props, State> {
         };
         return (
             <View style={{ flex: 1 }}>
+                <View style={{marginTop:Platform.OS==='ios'?Constants.statusBarHeight:0}}/>
                 {!this.state.isShow && <View style={{ height: "100%", justifyContent: "center" }}><Spinner style={{ alignSelf: "center" }} color={"#0183ce"} /></View>}
                 <GestureRecognizer
-                    onSwipeRight={(state) => this.onSwipeLeft(state)}
+                    onSwipeRight={(state) => this.onSwipeRight(state)}
                     config={config}
                     style={{
                         flex: 1,
