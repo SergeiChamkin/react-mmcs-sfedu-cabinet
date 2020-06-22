@@ -123,13 +123,14 @@ export default class BRS extends Component<Props, State> {
         if (data == null) return;
         if (data.nativeEvent == null) return;
         if (data.nativeEvent.url == null) return;
+
         this.url = data.nativeEvent.url
         this.refWebview.injectJavaScript('var err=document.querySelector("#content > ul");null==err?console.log("ok"):window.ReactNativeWebView.postMessage("logout");var c =document.querySelector("#wrap > div.header_wrapper > div.navigation > a"); c.setAttribute("href","");var b = document.getElementsByClassName("footer")[0]; b.remove();b = document.getElementsByClassName("helpLink")[0]; b.remove();var popup=document.querySelector("body > div.popup_overlay"),observer=new MutationObserver(function(){"none"!=popup.style.display&&(window.ReactNativeWebView.postMessage("NeedReload!"),popup.style.display="none")});observer.observe(popup,{attributes:!0,childList:!0});var auther = document.querySelector("#wrap > div.main_layer > div.main > div > div.AuthForm");if(auther!=null) {window.ReactNativeWebView.postMessage("refresh")};')
 
         if (data.nativeEvent.url.includes("https://grade.") && this.state.countOfLoading == 0) {
             this.refWebview.injectJavaScript('var a=document.querySelector("#wrap > div.main_layer > div.main > div > div.AuthForm > h2");if(a!=null){window.ReactNativeWebView.postMessage("refresh")}')
             this.setState({ countOfLoading: 1, isShow: false })
-            return
+            if(Platform.OS==="android") return
         }
 
         if (data.nativeEvent.url.includes("https://grade.") && !this.state.isShow) {
