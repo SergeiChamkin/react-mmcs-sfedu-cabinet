@@ -353,7 +353,7 @@ export default class Schedule extends Component {
         return (
             <View style={{ flex: 1 }}>
 
-                <Header style={{ backgroundColor: theme.colors.primary, flexDirection: "row", justifyContent: "center", width: "100%" }} noShadow={true} androidStatusBarColor={theme.colors.primary}>
+                <Header style={{ backgroundColor: theme.colors.primary, flexDirection: "row", justifyContent: "center", width: "100%",elevation: 0,shadowOpacity: 0,borderBottomWidth: 0, }} noShadow={true} androidStatusBarColor={theme.colors.primary}>
                     <View style={{ flexDirection: "row", marginLeft: wS(12), marginRight: wS(12), justifyContent: "space-between", flex: 1, alignSelf: "center" }}>
                         {this.state.importantTitle != "" ? <Text style={{ fontSize: 20, color: "white", alignSelf: "center", width: wS(500) }}>{this.state.importantTitle}</Text> :
                             <View style={{ flexDirection: "row" }}>

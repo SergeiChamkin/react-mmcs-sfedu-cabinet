@@ -2,12 +2,11 @@ import React, { Component } from 'react';
 import { TouchableOpacity, StyleSheet, Text, View, Alert, Linking, AppState, BackHandler, ImageBackground } from 'react-native';
 import { TextInput, Switch, Divider } from 'react-native-paper';
 import { wS, hS } from "../Utils/Scale"
-import { Spinner, Icon, Picker, Form } from 'native-base';
+import { Spinner, Icon, Picker, Form,Item } from 'native-base';
 import * as SecureStore from 'expo-secure-store';
 import { Header } from "native-base"
 import { theme } from '../core/theme';
 import RNPickerSelect from 'react-native-picker-select';
-
 export interface Props {
     nav: any;
 
@@ -23,17 +22,17 @@ export default class Settings extends Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
-        this.state = { selected: global.value==null?"Расписание":global.value, backSwitch: global.backSwitch==null?true:global.backSwitch, nightSwitch: global.nightSwitch==null?false:global.nightSwitch}
+        this.state = { selected: global.value == null ? "Расписание" : global.value, backSwitch: global.backSwitch == null ? true : global.backSwitch, nightSwitch: global.nightSwitch == null ? false : global.nightSwitch }
     }
 
 
     async componentDidMount() {
-        console.log(this.state.backSwitch+" "+this.state.nightSwitch)
+        console.log(this.state.backSwitch + " " + this.state.nightSwitch)
     }
 
     onValueChange(value: string) {
         console.log(value)
-        SecureStore.setItemAsync("screen",value)
+        SecureStore.setItemAsync("screen", value)
         this.setState({
             selected: value
         });
@@ -41,19 +40,19 @@ export default class Settings extends Component<Props, State> {
 
     onSwitchBackground(val) {
         console.log(!this.state.backSwitch)
-        if(!this.state.backSwitch==false){
-            SecureStore.setItemAsync("nightCheck",(false).toString())
-            this.setState({nightSwitch:false}) 
+        if (!this.state.backSwitch == false) {
+            SecureStore.setItemAsync("nightCheck", (false).toString())
+            this.setState({ nightSwitch: false })
         }
 
-        SecureStore.setItemAsync("backgroundCheck",(!this.state.backSwitch).toString())
+        SecureStore.setItemAsync("backgroundCheck", (!this.state.backSwitch).toString())
         this.setState({ backSwitch: !this.state.backSwitch })
     }
 
     onSwitchBackgroundNight(val) {
         console.log(!this.state.nightSwitch)
-        SecureStore.setItemAsync("nightCheck",(!this.state.nightSwitch).toString())
-        this.setState({nightSwitch:!this.state.nightSwitch})
+        SecureStore.setItemAsync("nightCheck", (!this.state.nightSwitch).toString())
+        this.setState({ nightSwitch: !this.state.nightSwitch })
     }
 
     async logOut() {
@@ -79,25 +78,31 @@ export default class Settings extends Component<Props, State> {
                         width: '100%',
                     }}
                 >
-      
+
                     <View style={{ marginLeft: wS(17), marginRight: wS(17), marginTop: hS(20), flexDirection: "column", justifyContent: "space-between", flex: 1 }}>
                         <View>
                             <Dividers text={"Окно по умолчанию"}></Dividers>
-                            <RNPickerSelect
-                                onValueChange={(value) => {this.onValueChange(value)}}
-                                items={[
-                                    { label: 'БРС', value: 'БРС' },
-                                    { label: 'Расписание', value: 'Расписание' },
-                                ]}
-                                value={this.state.selected}
-                            />
-
+                            <Item picker>
+                                <Picker
+                                    mode="dropdown"
+                                    iosIcon={<Icon name="arrow-down" />}
+                                    style={{ width: undefined }}
+                                    placeholderStyle={{ color: "#bfc6ea" }}
+                                    placeholderIconColor="#007aff"
+                                    onValueChange={(value) => {this.onValueChange(value)}}
+                                    selectedValue={this.state.selected}
+                                >
+                                    <Picker.Item label="БРС" value="БРС" />
+                                    <Picker.Item label="Расписание" value="Расписание" />
+                                </Picker>
+                            </Item>
+                            <View style={{marginTop:hS(15)}}/>
                             <Dividers text={"Настройки фоновой проверки"}></Dividers>
                             <View style={{ flexDirection: "row", justifyContent: 'space-between', marginTop: hS(15) }}>
                                 <Text style={{ width: wS(250), fontSize: 18 }}>
                                     Включить проверку оценок в фоновом режиме
                             </Text>
-                                <Switch style={{ flex: 1 }}
+                                <Switch
                                     trackColor={{ false: "#767577", true: "#81b0ff" }}
                                     ios_backgroundColor="#3e3e3e"
                                     onValueChange={(i) => { this.onSwitchBackground(i) }}
@@ -111,7 +116,7 @@ export default class Settings extends Component<Props, State> {
                                 <Text style={{ width: wS(250), fontSize: 18 }}>
                                     Проверять оценки ночью
                             </Text>
-                                <Switch style={{ flex: 1 }}
+                                <Switch
                                     trackColor={{ false: "#767577", true: "#81b0ff" }}
                                     ios_backgroundColor="#3e3e3e"
                                     onValueChange={(i) => { this.onSwitchBackgroundNight(i) }}
@@ -122,7 +127,7 @@ export default class Settings extends Component<Props, State> {
                                 </Switch>
                             </View>
                         </View>
-                        <TouchableOpacity style={{ borderBottomColor: "red", borderBottomWidth: 1, width: wS(250), marginBottom: hS(30), alignSelf: "center" }} onPress={()=>{this.logOut()}}>
+                        <TouchableOpacity style={{ borderBottomColor: "red", borderBottomWidth: 1, width: wS(250), marginBottom: hS(30), alignSelf: "center" }} onPress={() => { this.logOut() }}>
                             <Text style={{ fontSize: 25, alignSelf: "center", color: 'red', }}>Выйти из аккаунта</Text>
                         </TouchableOpacity>
                     </View>

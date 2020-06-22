@@ -9,6 +9,7 @@ const Button = ({ mode, style, children, ...props }) => (
       styles.button,
       mode === 'outlined' && { backgroundColor: theme.colors.surface },
       style,
+      props.disabled ===false && {backgroundColor:theme.colors.primary}
     ]}
     labelStyle={styles.text}
     mode={mode}

@@ -170,6 +170,7 @@ export default class LoginScreen extends Component<Props, State> {
         <KeyboardAvoidingView style={{ width: "100%" }} behavior={"padding"} keyboardVerticalOffset={-hS(45)}>
             <View style={[styles.inputContainer, { zIndex: -1 }]}>
               <TextInput
+                theme={{colors:{primary:theme.colors.primary}}}
                 label="Логин"
                 returnKeyType="next"
                 style={styles.input}
@@ -195,6 +196,7 @@ export default class LoginScreen extends Component<Props, State> {
                 ref={input => {
                   this.pass = input;
                 }}
+                theme={{colors:{primary:theme.colors.primary}}}
                 style={styles.input}
                 selectionColor={theme.colors.primary}
                 underlineColor="transparent"
