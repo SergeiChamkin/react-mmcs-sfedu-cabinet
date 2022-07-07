@@ -23,7 +23,7 @@
     "expo-permissions": "~8.0.0",
     "expo-secure-store": "~8.0.0",
     "expo-task-manager": "~8.0.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "native-base": "2.13.8",
     "react": "~16.9.0",
     "react-awesome-button": "^6.5.1",
